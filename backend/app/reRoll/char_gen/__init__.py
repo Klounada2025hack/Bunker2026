@@ -1,0 +1,1 @@
+from .char_gen import Generator_char

@@ -1,0 +1,17 @@
+button{
+  border:none;
+  outline:none;
+  background:none;
+  cursor:pointer;
+  box-shadow:none;
+}
+
+button:focus{
+  outline:none;
+  box-shadow:none;
+}
+
+button:focus-visible{
+  outline:none;
+  box-shadow:none;
+}

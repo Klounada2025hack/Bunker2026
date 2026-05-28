@@ -1,0 +1,30 @@
+.Container{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.Containeractive{
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.Containerbox{
+  display: flex;
+  flex-direction: column;
+  width: 1000px;
+}
+.layout{
+    display:flex;
+    gap:40px;
+    align-items:flex-start;
+}
+
+.ContainerButton{
+  display: flex;
+  gap: 40px;
+  flex-direction: row;
+}
+
+.hr {
+    width: 100%;
+}

@@ -1,0 +1,35 @@
+.smallreroll {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+
+    border-radius: 12px;
+    font-size: 18px;
+    background-color: #556861;
+    color: white;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+}
+
+.smallreroll:hover {
+    transform: translateY(-2px);
+}
+
+.smallreroll:active {
+    background-color: #2A3833;
+}
+
+.inputPlayers {
+    font-size: 20px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    outline: none;
+    width: 250px;
+    transition: 0.2s;
+}
+
+.inputPlayers:focus {
+    box-shadow: 0 0 5px #2A3833;
+}

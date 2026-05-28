@@ -1,0 +1,43 @@
+.box{
+    background-color: #28332F;
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    height: 650px;
+    width: 1000px;
+    padding: 30px;
+    overflow-y: auto;   
+    overflow-x: hidden; 
+    align-items:flex-start;
+    justify-content:flex-start;
+    scrollbar-width: thin;
+}
+
+.smallbox{
+    background-color: #33413C;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 28px;
+    border-bottom-right-radius: 28px;
+    height: 100px;
+    width: 1060px;
+    display: flex;
+    justify-content: center;   
+    align-items: center;      
+}
+
+
+.boxPlaceholder{
+    opacity:0.6;
+    font-size:18px;
+}
+
+.Boxcontent{
+    font-size: 25px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    text-align: left;
+}
+
+.box::-webkit-scrollbar{
+    width:6px;
+}

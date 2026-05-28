@@ -1,0 +1,1 @@
+from .phobia_gen import Generator_phobia

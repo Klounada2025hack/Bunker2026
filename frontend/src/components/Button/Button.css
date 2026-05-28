@@ -1,0 +1,33 @@
+.card{
+    transition: background-color 0.5s, 250ms;
+    border: none;
+    height: 120px;
+    width: 300px;
+    flex-direction: column;
+    border-radius: 28px;
+    font-size: 20px;
+    background-color: #33413C;
+    
+}
+.small{
+    transition: background-color 0.5s, 250ms;
+    border: 2px solid transparent;
+    height: 60px;
+    flex-direction: row;
+    border-radius: 20px;
+    font-size: 20px;
+    margin-right: 10px;
+    background-color: #33413C;
+}
+.active{
+    background-color: #2A3833;
+    border: 2px solid white;
+
+}
+.button:hover{
+
+    translate: 0px -2px ;
+}
+.button:active{
+    background-color: #2A3833;
+}
