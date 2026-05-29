@@ -70,6 +70,10 @@ Bunker/
 
 # Запуск проекта
 
+```bash id="frontstart"
+cd Bunker2026
+```
+
 ## Frontend
 
 ```bash id="frontstart"
@@ -133,6 +137,3 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 ---
 
-# Лицензия
-
-Open-source проект.
