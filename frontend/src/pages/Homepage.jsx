@@ -42,7 +42,7 @@ function Homepage(){
 
     return(
         
-    <div className="layout">
+    <div className="layoutHome">
         <div className="Container">
             <Button_reRoll
                 variant="input"

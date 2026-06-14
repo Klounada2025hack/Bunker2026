@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from app.bunker import Bunker_generator
 from app.player import Generator_player
 from app.catastrophe import Catastophe_gen
@@ -51,3 +52,10 @@ def health_gen():
 @app.get("/phobia_gen/")
 def phobia_gen():
     return Generator_phobia.generate_card()
+
+class UserLoginData(BaseModel):
+    name: str
+
+@app.post("/api/set_name")
+async def receive_user_name(data: UserLoginData):
+    return {"status": "success", "name": data.name}
