@@ -11,8 +11,8 @@ export default function Authorization() {
     const [Name, setName] = useState("");
     const navigate = useNavigate();
 
-    const handleInputChange = (e) => {
 
+    const handleInputChange = (e) => {
         const validValue = e.target.value.replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, "");
         setName(validValue);
     };
@@ -23,15 +23,7 @@ export default function Authorization() {
             return;
         }
 
-    const handleLogin = async () => {
-
-        if (!Name.trim()) {
-            alert("йоу имя то у тебя есть? Иначе сам придумаю!");
-            return;
-        }
-
         try {
-
             const response = await fetch("http://127.0.0.1:8000/api/set_name", {
                 method: "POST",
                 headers: {
@@ -41,7 +33,6 @@ export default function Authorization() {
             });
 
             if (response.ok) {
-
                 navigate("/home");
             } else {
                 alert("Ошибка на сервере при сохранении имени");
@@ -60,7 +51,7 @@ export default function Authorization() {
                     variant="input"
                     value={Name}
                     placeholder="Введите Свое имя"
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={handleInputChange}
                 />
                 <Button
                     variant="small"
