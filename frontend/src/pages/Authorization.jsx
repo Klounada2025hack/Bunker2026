@@ -39,7 +39,7 @@ export default function Authorization() {
             }
         } catch (error) {
             console.error("Ошибка сети:", error);
-            alert("Не удалось соединиться с сервером. Запущен ли бэкенд?");
+            alert("Не удалось соединиться с сервером");
         }
     };
 
