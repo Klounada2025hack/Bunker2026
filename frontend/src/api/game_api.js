@@ -46,4 +46,4 @@ export async function disaster_gen(){
     const response = await fetch(`${API_URL}/disaster_gen/`)
     const data = await response.json()
     return data
-}
+} 

@@ -1,16 +1,15 @@
-import "../pages/container.css"
+import "../container.css"
 import { useState } from "react";
-import Button from "../components/Button/button";
-import Box from "../components/Box/Box";
-import Smallbox from "../components/Box/smallbox";
-import Button_reRoll from "../components/Button_reRoll/Button_reRoll";
+import Button from "../../components/Button/button";
+import Box from "../../components/Box/Box";
+import Smallbox from "../../components/Box/smallbox";
+import Button_reRoll from "../../components/Button_reRoll/Button_reRoll";
 import { useNavigate } from "react-router-dom";
-import Logo from "../components/Logo/Logo"
+import Logo from "../../components/Logo/Logo"
 
 export default function Authorization() {
     const [Name, setName] = useState("");
     const navigate = useNavigate();
-
 
     const handleInputChange = (e) => {
         const validValue = e.target.value.replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, "");
@@ -33,7 +32,15 @@ export default function Authorization() {
             });
 
             if (response.ok) {
-                navigate("/home");
+                const data = await response.json();
+                
+                localStorage.setItem("currentUserId", data.id);
+                localStorage.setItem("currentUserName", data.name);
+                
+                console.log("Получен ID:", data.id);
+                
+
+                navigate("/Lobby");
             } else {
                 alert("Ошибка на сервере при сохранении имени");
             }
