@@ -9,6 +9,7 @@ from app.reRoll.health_gen import Generator_health
 from app.reRoll.char_gen import Generator_char
 from app.reRoll.phobia_gen import Generator_phobia
 from app.reRoll.hobbie_gen import Generator_hob
+from app.name_to_id import generate_user_id
 
 app = FastAPI()
 
@@ -58,4 +59,14 @@ class UserLoginData(BaseModel):
 
 @app.post("/api/set_name")
 async def receive_user_name(data: UserLoginData):
-    return {"status": "success", "name": data.name}
+    # Вызываем функцию из name_to_id
+    user_id = generate_user_id(data.name)
+    
+    # Здесь можно использовать user_id как нужно
+    # Потом добавишь сохранение в БД
+    
+    return {
+        "status": "success",
+        "name": data.name,
+        "id": user_id
+    }

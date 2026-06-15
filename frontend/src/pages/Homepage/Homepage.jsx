@@ -1,10 +1,10 @@
-import "../pages/container.css"
-import Button from "../components/Button/button";
-import { player_gen, bunker_gen, disaster_gen, hobbie_gen, prof_gen,health_gen,phobia_gen,} from "../api/game_api";
+import "../container.css"; 
+import Button from "../../components/Button/button";
+import { player_gen, bunker_gen, disaster_gen, hobbie_gen, prof_gen,health_gen,phobia_gen,} from "../../api/game_api";
 import { useState } from "react";
-import Box from "../components/Box/Box";
-import Smallbox from "../components/Box/smallbox";
-import Button_reRoll from "../components/Button_reRoll/Button_reRoll";
+import Box from "../../components/Box/Box";
+import Smallbox from "../../components/Box/smallbox";
+import Button_reRoll from "../../components/Button_reRoll/Button_reRoll";
 
 function Homepage(){
 

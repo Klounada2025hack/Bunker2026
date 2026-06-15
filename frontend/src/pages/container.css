@@ -44,3 +44,24 @@ html, body, #root {
 .hr {
     width: 100%;
 }
+.lobby-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.lobby-join {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.lobby-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
