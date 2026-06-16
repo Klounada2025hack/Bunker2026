@@ -26,8 +26,10 @@
     padding: 8px 12px;
     border-radius: 8px;
     outline: none;
-    width: 250px;
+    width: 400px;
     transition: 0.2s;
+    margin: 0 auto;
+    
 }
 
 .inputPlayers:focus {
