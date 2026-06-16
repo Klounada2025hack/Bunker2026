@@ -24,44 +24,42 @@ export default function Lobby() {
     };
 
     const handleCreateRoom = async () => {
-        const userId = localStorage.getItem("currentUserId");
+
         const userName = localStorage.getItem("currentUserName");
 
         setLoading(true);
         try {
-            const data = await createRoom(userId, userName);
+            const data = await createRoom(userName); 
             
             localStorage.setItem("roomId", data.room_id);
             localStorage.setItem("isCreator", "true");
             
-            console.log("Комната создана на сервере. ID:", data.room_id);
             navigate("/home");
         } catch (error) {
             console.error("Ошибка создания комнаты:", error);
-            alert("Не удалось создать комнату");
+            alert("Не удалось создать комнату: " + error.message);
         } finally {
             setLoading(false);
         }
     };
 
     const handleJoinRoom = async () => {
-        if (!roomCode.trim() || roomCode.length < 8) {
-            alert("Введите корректный код комнаты (надо 8 символов)!");
+        if (!roomCode.trim() || roomCode.length !== 8) {
+            alert("Введите корректный код комнаты (ровно 8 символов)!");
             return;
         }
 
-        const userId = localStorage.getItem("currentUserId");
+
         const userName = localStorage.getItem("currentUserName");
         const roomId = roomCode.toUpperCase();
 
         setLoading(true);
         try {
-            await joinRoom(roomId, userId, userName);
+            await joinRoom(roomId, userName);
             
             localStorage.setItem("roomId", roomId);
             localStorage.setItem("isCreator", "false");
             
-            console.log("Присоединились к комнате:", roomId);
             navigate("/home");
         } catch (error) {
             console.error("Ошибка присоединения:", error);

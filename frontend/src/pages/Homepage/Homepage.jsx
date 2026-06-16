@@ -38,12 +38,11 @@ export default function Homepage() {
 
     useEffect(() => {
         if (!roomId || !myId) return;
-
         let isCancelled = false;
 
         const fetchData = async () => {
             try {
-                const data = await getGameState(roomId, myId);
+                const data = await getGameState(roomId);
                 if (isCancelled) return;
                 
                 setGameStarted(!!data.is_started);
@@ -52,7 +51,6 @@ export default function Homepage() {
                 setDisasterCard(data.disaster_card || null);
                 setMyCharacter(data.my_character || null);
                 setMyAbilities(Array.isArray(data.my_abilities) ? data.my_abilities : []);
-                
             } catch (error) {
                 console.error(error);
             }
@@ -60,11 +58,7 @@ export default function Homepage() {
 
         fetchData(); 
         const intervalId = setInterval(fetchData, 2000); 
-
-        return () => {
-            isCancelled = true;
-            clearInterval(intervalId); 
-        };
+        return () => { isCancelled = true; clearInterval(intervalId); };
     }, [roomId, myId]);
 
     const handleStartGame = async () => {
@@ -89,7 +83,7 @@ export default function Homepage() {
     const applyAbility = async (abilityText, targetId) => {
         const targetName = targetId ? players.find(p => p.id === targetId)?.name : "себя";
         try {
-            await AbilityApi(roomId, myId, abilityText, targetId);
+            await AbilityApi(roomId, abilityText, targetId);
             setNotification(`${myName} использовал "${abilityText}" на ${targetName}!`);
             setShowTargetModal(false);
         } catch (error) {
@@ -113,16 +107,14 @@ export default function Homepage() {
                     <h1>Комната: {roomId}</h1>
                     <p>Ожидание игроков... ({players.length})</p>
                     <div style={{ marginBottom: '20px', color: '#aaa' }}>
-                        {players.map(p => <div key={p.id}>{p.name} {p.is_host && '👑'}</div>)}
+                        {players.map(p => <div key={p.id}>{p.name} {p.is_host && 'Host'}</div>)}
                     </div>
                     {isHost ? (
                         <Button variant="large" text="НАЧАТЬ ИГРУ" onClick={handleStartGame} />
                     ) : (
                         <p style={{ color: "#f1c40f" }}>Ждите, пока хост начнет игру...</p>
                     )}
-                    <button className="cancel-btn" style={{marginTop: '20px'}} onClick={() => navigate("/lobby")}>
-                        Покинуть лобби
-                    </button>
+                    <button className="cancel-btn" style={{marginTop: '20px'}} onClick={() => navigate("/lobby")}>Покинуть лобби</button>
                 </div>
             </div>
         );
@@ -131,56 +123,37 @@ export default function Homepage() {
     return (
         <div className="game-layout">
             {notification && <div className="notification-toast">{notification}</div>}
-
             <div className="sidebar">
                 <h3>Игроки в бункере ({players.length})</h3>
                 {players.map(player => (
                     <div key={player.id} className={`player-item ${!player.is_alive ? 'kicked' : ''}`}>
-                        <span>{player.name} {player.is_host && "Host"}</span>
+                        <span>{player.name} {player.is_host && 'Host'}</span>
                         {isHost && player.is_alive && player.id !== myId && (
                             <button className="kick-btn" onClick={() => handleKick(player.id)}>КИК</button>
                         )}
                     </div>
                 ))}
-                <button className="cancel-btn" style={{marginTop: 'auto'}} onClick={() => navigate("/lobby")}>
-                    Покинуть игру
-                </button>
+                <button className="cancel-btn" style={{marginTop: 'auto'}} onClick={() => navigate("/lobby")}>Покинуть игру</button>
             </div>
 
             <div className="main-board">
                 <div className="top-row">
                     <Box title="БУНКЕР">
-                        {bunkerCard ? (
-                            Object.entries(bunkerCard).map(([k, v]) => (
-                                <div key={k}><strong>{k}:</strong> {String(v)}</div>
-                            ))
-                        ) : (
-                            <p>Загрузка...</p>
-                        )}
+                        {bunkerCard ? Object.entries(bunkerCard).map(([k, v]) => <div key={k}><strong>{k}:</strong> {String(v)}</div>) : <p>Загрузка...</p>}
                     </Box>
                     <Box title="КАТАСТРОФА">
-                        {disasterCard ? (
-                            Object.entries(disasterCard).map(([k, v]) => (
-                                <div key={k}><strong>{k}:</strong> {String(v)}</div>
-                            ))
-                        ) : (
-                            <p>Загрузка...</p>
-                        )}
+                        {disasterCard ? Object.entries(disasterCard).map(([k, v]) => <div key={k}><strong>{k}:</strong> {String(v)}</div>) : <p>Загрузка...</p>}
                     </Box>
                 </div>
 
                 <div className="mid-row">
                     <Box title={`МОЙ ПЕРСОНАЖ: ${myName}`}>
-                        {myCharacter ? (
-                            Object.entries(myCharacter).map(([k, v]) => (
-                                <div key={k} style={{ marginBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '4px' }}>
-                                    <strong>{k}</strong><br/>
-                                    <span style={{ fontSize: '1.1em', color: '#f1c40f' }}>{String(v)}</span>
-                                </div>
-                            ))
-                        ) : (
-                            <p>Загрузка...</p>
-                        )}
+                        {myCharacter ? Object.entries(myCharacter).map(([k, v]) => (
+                            <div key={k} style={{ marginBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '4px' }}>
+                                <strong>{k}</strong><br/>
+                                <span style={{ fontSize: '1.1em', color: '#f1c40f' }}>{String(v)}</span>
+                            </div>
+                        )) : <p>Загрузка...</p>}
                     </Box>
                 </div>
 
@@ -201,9 +174,7 @@ export default function Homepage() {
                         <p style={{color: '#f1c40f', fontStyle: 'italic'}}>"{selectedAbility}"</p>
                         <div className="target-list">
                             {players.filter(p => p.is_alive && p.id !== myId).map(player => (
-                                <button key={player.id} className="target-btn" onClick={() => applyAbility(selectedAbility, player.id)}>
-                                    {player.name}
-                                </button>
+                                <button key={player.id} className="target-btn" onClick={() => applyAbility(selectedAbility, player.id)}>{player.name}</button>
                             ))}
                         </div>
                         <button className="cancel-btn" onClick={() => setShowTargetModal(false)}>Отмена</button>
