@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button/button";
 import Button_reRoll from "../../components/Button_reRoll/Button_reRoll";
 import Logo from "../../components/Logo/Logo";
+import { createRoom, joinRoom } from "../../api/game_api";
 import "../container.css";
 
 export default function Lobby() {
     const [roomCode, setRoomCode] = useState("");
     const [showJoinInput, setShowJoinInput] = useState(false);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
 
     useEffect(() => {
         const userId = localStorage.getItem("currentUserId");
@@ -18,37 +19,55 @@ export default function Lobby() {
         }
     }, [navigate]);
 
-    const generateRoomCode = () => {
-        return Math.random().toString(36).substring(2, 8).toUpperCase();
-    };
-
     const handleGenerator = () => {
         navigate("/Gen");
-
-    }
-
-    const handleCreateRoom = () => {
-        const code = generateRoomCode();
-        
-        localStorage.setItem("roomCode", code);
-        localStorage.setItem("isCreator", "true");
-        
-        console.log("Комната создана. Код:", code);
-        navigate("/home");
     };
 
+    const handleCreateRoom = async () => {
 
-    const handleJoinRoom = () => {
-        if (!roomCode.trim() || roomCode.length < 4) {
-            alert("Введите корректный код комнаты (6 символа)!");
+        const userName = localStorage.getItem("currentUserName");
+
+        setLoading(true);
+        try {
+            const data = await createRoom(userName); 
+            
+            localStorage.setItem("roomId", data.room_id);
+            localStorage.setItem("isCreator", "true");
+            
+            navigate("/home");
+        } catch (error) {
+            console.error("Ошибка создания комнаты:", error);
+            alert("Не удалось создать комнату: " + error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleJoinRoom = async () => {
+        if (!roomCode.trim() || roomCode.length !== 8) {
+            alert("Введите корректный код комнаты (ровно 8 символов)!");
             return;
         }
 
-        localStorage.setItem("roomCode", roomCode.toUpperCase());
-        localStorage.setItem("isCreator", "false");
-        navigate("/home");
-    };
 
+        const userName = localStorage.getItem("currentUserName");
+        const roomId = roomCode.toUpperCase();
+
+        setLoading(true);
+        try {
+            await joinRoom(roomId, userName);
+            
+            localStorage.setItem("roomId", roomId);
+            localStorage.setItem("isCreator", "false");
+            
+            navigate("/home");
+        } catch (error) {
+            console.error("Ошибка присоединения:", error);
+            alert("Комната не найдена или игра уже началась");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleInputChange = (e) => {
         const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -61,11 +80,10 @@ export default function Lobby() {
                 <Logo />
                 
                 {!showJoinInput ? (
-
                     <div className="lobby-buttons">
                         <Button
                             variant="small"
-                            text="Создать комнату"
+                            text={loading ? "Создание..." : "Создать комнату"}
                             onClick={handleCreateRoom}
                         />
                         <Button
@@ -80,7 +98,6 @@ export default function Lobby() {
                         />
                     </div>
                 ) : (
-
                     <div className="lobby-join">
                         <Button_reRoll
                             variant="input"
@@ -91,7 +108,7 @@ export default function Lobby() {
                         <div className="lobby-actions">
                             <Button
                                 variant="small"
-                                text="Войти"
+                                text={loading ? "Вход..." : "Войти"}
                                 onClick={handleJoinRoom}
                             />
                             <Button
@@ -101,7 +118,6 @@ export default function Lobby() {
                                     setShowJoinInput(false);
                                     setRoomCode("");
                                 }}
-
                             />
                         </div>
                     </div>

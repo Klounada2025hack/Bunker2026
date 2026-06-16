@@ -1,0 +1,1 @@
+from .Spec_card import Generator_spec
