@@ -38,5 +38,5 @@ class Catastophe_gen:
         disaster_choice = random.choice(Catastrophe.disasters)
 
         return {
-            "Катастрофа":disaster_choice
+            "Катастрофа": disaster_choice
         }

@@ -353,7 +353,7 @@ class Player:
         "флешка с информацией об острове эпштейне",
         "разогревающая мазь",
         "контейнер полный резиновых уток для ванны",
-        "краманный тралалело тралала",
+        "карманный тралалело тралала",
         "эксклюзивный лабубу",
         "утюг",
         "2 свиньи",
@@ -704,43 +704,35 @@ class Generator_player:
         else:
             unit2 = "лет"
         experience2 = f"{experience_number2} {unit2}"
-        cards1 = random.choice(Player.cards)
-        cards2 = random.choice(Player.cards)
-        while cards2 == cards1:
-            cards2 = random.choice(Player.cards)
 
         dan1 = random.choice(Player.dangerous)
         dan2 = random.choice(Player.dangerous)
         while dan2 == dan1:
             dan2 = random.choice(Player.dangerous)
 
-        return {
-            "Профессия:""\n"
-            "Работа": job,
-            "Стаж": experience, "\n"
-            
-            "Биологические данные:""\n"
-            "Пол": gender,
-            "Возраст": age,
-            "Способность к деторождению": fert, "\n"
-            
-            "Состояние здоровья:""\n"
-            "Диагноз": disease_choice,
-            "Прогресс": progress, "\n"
-            
-            "Фобия": phobia,
-            "Багаж": bag,
-            "Черта характера": chr,
-            "Хобби": hobbie,
-            "Стаж": experience2, "\n"
-            
-            "Дополнительная информация 1": extra1,
-            "Дополнительная информация 2": extra2, "\n"
-            
-            "Карта способностей 1": card1,
-            "Карта способностей 2 ": card2,"\n"
-            
-            "Карта угрозы": dan1,
-            "Карта угрозы": dan2,
-            
-        }
+        return [
+    {"key": "__header__", "value": "Профессия:"},
+    {"key": "Работа", "value": job},
+    {"key": "Стаж", "value": experience},
+    
+    {"key": "__header__", "value": "Биологические данные:"},
+    {"key": "Пол", "value": gender},
+    {"key": "Возраст", "value": age},
+    {"key": "Способность к деторождению", "value": fert},
+    
+    {"key": "__header__", "value": "Состояние здоровья:"},
+    {"key": "Диагноз", "value": disease_choice},
+    {"key": "Прогресс", "value": progress},
+    
+    {"key": "Фобия", "value": phobia},
+    {"key": "Багаж", "value": bag},
+    {"key": "Черта характера", "value": chr},
+    {"key": "Хобби", "value": hobbie},
+    {"key": "Стаж (доп.)", "value": experience2},
+    
+    {"key": "Дополнительная информация 1", "value": extra1},
+    {"key": "Дополнительная информация 2", "value": extra2},
+    
+    {"key": "Карта угрозы 1", "value": dan1},
+    {"key": "Карта угрозы 2", "value": dan2},
+]

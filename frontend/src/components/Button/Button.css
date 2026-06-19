@@ -9,7 +9,7 @@
     background-color: #33413C;
     
 }
-.small{
+.small {
     transition: background-color 0.5s, 250ms;
     border: 2px solid transparent;
     height: 60px;
@@ -17,9 +17,27 @@
     border-radius: 20px;
     font-size: 20px;
     margin-right: 10px;
-    color: aliceblue;
-    background-color: #33413C;
+    color: #1A202C;            /* тёмный текст на жёлтом */
+    background-color: #F1C40F; /* жёлтый вместо зелёного */
+    padding: 0 40px;           /* чтобы не облегала текст */
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 100%;
+    box-sizing: border-box;
+    
 }
+
+.small:hover {
+    background-color: #D4AC0D;
+    translate: 0px -2px;
+}
+
+.small:active {
+    background-color: #B7950B;
+}
+
 .active{
     background-color: #2A3833;
     border: 2px solid white;

@@ -23,7 +23,9 @@ export default function Homepage() {
     
     const [notification, setNotification] = useState("");
     const [showTargetModal, setShowTargetModal] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [selectedAbility, setSelectedAbility] = useState("");
+    const [pendingTargetId, setPendingTargetId] = useState(null);
 
     useEffect(() => {
         if (!myId || !myName) navigate("/authorization");
@@ -32,7 +34,7 @@ export default function Homepage() {
 
     useEffect(() => {
         if (notification) {
-            const timer = setTimeout(() => setNotification(""), 4000);
+            const timer = setTimeout(() => setNotification(""), 5000);
             return () => clearTimeout(timer);
         }
     }, [notification]);
@@ -46,11 +48,19 @@ export default function Homepage() {
                 const data = await getGameState(roomId);
                 if (isCancelled) return;
                 
+                console.log("[FRONTEND DEBUG] Получены данные:", data);
+                console.log("[FRONTEND DEBUG] my_character:", data.my_character);
+                
                 setGameStarted(!!data.is_started);
                 setPlayers(Array.isArray(data.players) ? data.players : []);
                 setBunkerCard(data.bunker_card || null);
                 setDisasterCard(data.disaster_card || null);
-                setMyCharacter(data.my_character || null);
+                
+                // Принудительно создаём новый объект для React
+                const newCharacter = data.my_character ? JSON.parse(JSON.stringify(data.my_character)) : null;
+                console.log("[FRONTEND DEBUG] Новая карточка персонажа:", newCharacter);
+                setMyCharacter(newCharacter);
+                
                 setMyAbilities(Array.isArray(data.my_abilities) ? data.my_abilities : []);
             } catch (error) {
                 console.error(error);
@@ -73,23 +83,74 @@ export default function Homepage() {
 
     const handleAbilityClick = (ability) => {
         if (ability.used) return;
-        if (ability.text.includes("любого игрока") || ability.text.includes("поменяться")) {
-            setSelectedAbility(ability.text);
+        
+        if (ability.type === "positional") return;
+        
+        setSelectedAbility(ability.text);
+        
+        if (ability.type === "target_player" || ability.type === "swap") {
             setShowTargetModal(true);
-        } else {
-            applyAbility(ability.text, null);
+        } 
+        else if (ability.type === "self" || ability.type === "bunker" || 
+                 ability.type === "all_players" || ability.type === "reveal") {
+            setShowConfirmModal(true);
         }
     };
 
-    const applyAbility = async (abilityText, targetId) => {
-        const targetName = targetId ? players.find(p => p.id === targetId)?.name : "себя";
+    const confirmAbility = async () => {
         try {
-            await AbilityApi(roomId, abilityText, targetId);
-            setNotification(`${myName} использовал "${abilityText}" на ${targetName}!`);
-            setShowTargetModal(false);
+            await AbilityApi(roomId, selectedAbility, null);
+            setNotification({
+                title: `${myName} использовал способность`,
+                text: selectedAbility
+            });
+            setShowConfirmModal(false);
+            setSelectedAbility("");
+            
+            // Принудительно обновляем данные сразу после использования способности
+            setTimeout(async () => {
+                const data = await getGameState(roomId);
+                const newCharacter = data.my_character ? JSON.parse(JSON.stringify(data.my_character)) : null;
+                setMyCharacter(newCharacter);
+            }, 500);
         } catch (error) {
             alert(error.message);
         }
+    };
+
+    const handleTargetSelect = (targetId) => {
+        setPendingTargetId(targetId);
+        setShowTargetModal(false);
+        setShowConfirmModal(true);
+    };
+
+    const confirmAbilityWithTarget = async () => {
+        const targetName = players.find(p => p.id === pendingTargetId)?.name || "игрока";
+        try {
+            await AbilityApi(roomId, selectedAbility, pendingTargetId);
+            setNotification({
+                title: `${myName} использовал способность на ${targetName}`,
+                text: selectedAbility
+            });
+            setShowConfirmModal(false);
+            setSelectedAbility("");
+            setPendingTargetId(null);
+            
+            // Принудительно обновляем данные сразу после использования способности
+            setTimeout(async () => {
+                const data = await getGameState(roomId);
+                const newCharacter = data.my_character ? JSON.parse(JSON.stringify(data.my_character)) : null;
+                setMyCharacter(newCharacter);
+            }, 500);
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
+    const closeConfirmModal = () => {
+        setShowConfirmModal(false);
+        setSelectedAbility("");
+        setPendingTargetId(null);
     };
 
     const handleKick = async (targetId) => {
@@ -100,7 +161,6 @@ export default function Homepage() {
             alert("Не удалось кикнуть игрока");
         }
     };
-
 
     if (!gameStarted) {
         return (
@@ -119,14 +179,18 @@ export default function Homepage() {
                     </div>
 
                     {isHost ? (
-                        <button className="btn-start-game" onClick={handleStartGame}>
+                        <button 
+                        className="btn-start-game" 
+                        onClick={handleStartGame}>
                             НАЧАТЬ ИГРУ
                         </button>
                     ) : (
                         <p className="waiting-msg">Ждите, пока хост начнет игру...</p>
                     )}
                     
-                    <button className="btn-leave" onClick={() => navigate("/lobby")}>
+                    <button 
+                    className="btn-leave" 
+                    onClick={() => navigate("/lobby")}>
                         Покинуть лобби
                     </button>
                 </div>
@@ -134,10 +198,16 @@ export default function Homepage() {
         );
     }
 
-    // ЭКРАН ИГРЫ
     return (
         <div className="game-layout">
-            {notification && <div className="toast">{notification}</div>}
+            {notification && (
+                <div className="toast toast-ability">
+                    <div className="toast-title">{typeof notification === 'object' ? notification.title : notification}</div>
+                    {typeof notification === 'object' && notification.text && (
+                        <div className="toast-text">"{notification.text}"</div>
+                    )}
+                </div>
+            )}
             
             <div className="sidebar">
                 <h3 className="sidebar-title">Игроки в бункере ({players.length})</h3>
@@ -147,7 +217,9 @@ export default function Homepage() {
                             <span>{player.name}</span>
                             {player.is_host && <span className="badge-host">Host</span>}
                             {isHost && player.is_alive && player.id !== myId && (
-                                <button className="btn-kick" onClick={() => handleKick(player.id)}>КИК</button>
+                                <button 
+                                className="btn-kick" 
+                                onClick={() => handleKick(player.id)}>КИК</button>
                             )}
                         </div>
                     ))}
@@ -170,30 +242,44 @@ export default function Homepage() {
                         )) : <p>Загрузка...</p>}
                     </Box>
                 </div>
-
-                <div className="board-row mid-row">
-                    <Box title={`МОЙ ПЕРСОНАЖ: ${myName}`} className="game-box">
-                        {myCharacter ? Object.entries(myCharacter).map(([k, v]) => (
-                            <div key={k} className="char-item">
-                                <strong>{k}</strong>
-                                <span className="char-value">{String(v)}</span>
-                            </div>
-                        )) : <p>Загрузка...</p>}
-                    </Box>
-                </div>
-
                 <div className="board-row bottom-row">
-                    {myAbilities.map((ability, index) => (
-                        <Box 
-                            key={index} 
-                            title={`КАРТА СПОСОБНОСТИ ${index + 1}`} 
-                            className={`game-box ability-box ${ability.used ? "used" : ""}`} 
-                            onClick={() => handleAbilityClick(ability)}
-                        >
-                            <p className="ability-text">{ability.text}</p>
-                            {ability.used && <p className="ability-used">ИСПОЛЬЗОВАНО</p>}
-                        </Box>
-                    ))}
+                    <Box title={`МОЙ ПЕРСОНАЖ: ${myName}`} className="game-box character-box">
+                        {Array.isArray(myCharacter) ? myCharacter.map((item, idx) => {
+                            if (item.key === "__header__") {
+                                return (
+                                    <div key={idx} className="char-section-header">
+                                        {item.value}
+                                    </div>
+                                );
+                            }
+                            return (
+                                <div key={idx} className="char-item">
+                                    <strong>{item.key}:</strong>
+                                    <span className="char-value">{String(item.value)}</span>
+                                </div>
+                            );
+                        }) : <p>Загрузка...</p>}
+                    </Box>
+                    
+                    <div className="abilities-column">
+                        {myAbilities.map((ability, index) => {
+                            const isPositional = ability.type === "positional";
+                            const isUsed = ability.used;
+                            
+                            return (
+                                <div 
+                                    key={index} 
+                                    className={`ability-box ${isUsed ? "used" : ""} ${isPositional ? "positional" : ""}`} 
+                                    onClick={() => handleAbilityClick(ability)}
+                                >
+                                    <h3>СПОСОБНОСТЬ {index + 1}</h3>
+                                    <p className="ability-text">{ability.text}</p>
+                                    {isUsed && <p className="ability-used">ИСПОЛЬЗОВАНО</p>}
+                                    {isPositional && <p className="ability-positional">АВТО</p>}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
@@ -201,15 +287,34 @@ export default function Homepage() {
                 <div className="modal-overlay" onClick={() => setShowTargetModal(false)}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
                         <h3>Выберите цель для карты:</h3>
-                        <p style={{color: 'var(--accent)', fontStyle: 'italic', margin: '10px 0'}}>"{selectedAbility}"</p>
+                        <p className="modal-ability-text">"{selectedAbility}"</p>
                         <div className="target-list">
                             {players.filter(p => p.is_alive && p.id !== myId).map(player => (
-                                <button key={player.id} className="target-btn" onClick={() => applyAbility(selectedAbility, player.id)}>
+                                <button key={player.id} className="target-btn" onClick={() => handleTargetSelect(player.id)}>
                                     {player.name}
                                 </button>
                             ))}
                         </div>
                         <button className="btn-leave" onClick={() => setShowTargetModal(false)}>Отмена</button>
+                    </div>
+                </div>
+            )}
+
+            {showConfirmModal && (
+                <div className="modal-overlay" onClick={closeConfirmModal}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <h3>
+                            {pendingTargetId 
+                                ? `Подтвердите использование на ${players.find(p => p.id === pendingTargetId)?.name || "игроке"}:` 
+                                : "Подтвердите использование карты:"}
+                        </h3>
+                        <p className="modal-ability-text">"{selectedAbility}"</p>
+                        <div className="modal-actions">
+                            <button className="btn-confirm" onClick={pendingTargetId ? confirmAbilityWithTarget : confirmAbility}>
+                                ПОДТВЕРДИТЬ
+                            </button>
+                            <button className="btn-leave" onClick={closeConfirmModal}>ОТМЕНА</button>
+                        </div>
                     </div>
                 </div>
             )}

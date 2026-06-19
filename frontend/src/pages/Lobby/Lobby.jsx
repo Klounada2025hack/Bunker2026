@@ -98,27 +98,31 @@ export default function Lobby() {
                         />
                     </div>
                 ) : (
-                    <div className="lobby-join">
-                        <Button_reRoll
-                            variant="input"
-                            value={roomCode}
-                            placeholder="КОД КОМНАТЫ"
-                            onChange={handleInputChange}
-                        />
-                        <div className="lobby-actions">
-                            <Button
-                                variant="small"
-                                text={loading ? "Вход..." : "Войти"}
-                                onClick={handleJoinRoom}
+                    <div className="lobby-wrapper">
+                        <div className="lobby-card-compact">
+                            <h1 className="lobby-title">Присоединиться к комнате</h1>
+                            <input
+                                className="inputPlayers"
+                                value={roomCode}
+                                placeholder="Код комнаты"
+                                onChange={handleInputChange}
+                                maxLength={8}
                             />
-                            <Button
-                                variant="small"
-                                text="Назад"
-                                onClick={() => {
-                                    setShowJoinInput(false);
-                                    setRoomCode("");
-                                }}
-                            />
+                            <div className="lobby-actions">
+                                <Button
+                                    variant="small"
+                                    text={loading ? "Вход..." : "Войти"}
+                                    onClick={handleJoinRoom}
+                                />
+                                <Button
+                                    variant="small"
+                                    text="Назад"
+                                    onClick={() => {
+                                        setShowJoinInput(false);
+                                        setRoomCode("");
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
                 )}
