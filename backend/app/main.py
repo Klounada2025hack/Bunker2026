@@ -97,9 +97,9 @@ async def lifespan(app: FastAPI):
     try:
         result = cleanup_old_data(db)
         if result['deleted_rooms'] > 0 or result['deleted_users'] > 0:
-            print(f"🧹 Автоматическая очистка при старте: удалено комнат: {result['deleted_rooms']}, пользователей: {result['deleted_users']}")
+            print(f"Автоматическая очистка при старте: удалено комнат: {result['deleted_rooms']}, пользователей: {result['deleted_users']}")
         else:
-            print("✅ Старые данные не найдены")
+            print("Старые данные не найдены")
     finally:
         db.close()
     
@@ -110,7 +110,7 @@ async def lifespan(app: FastAPI):
             try:
                 result = cleanup_old_data(db)
                 if result['deleted_rooms'] > 0 or result['deleted_users'] > 0:
-                    print(f"🧹 Периодическая очистка: удалено комнат: {result['deleted_rooms']}, пользователей: {result['deleted_users']}")
+                    print(f"Периодическая очистка: удалено комнат: {result['deleted_rooms']}, пользователей: {result['deleted_users']}")
             finally:
                 db.close()
     
@@ -140,6 +140,72 @@ ALL_ABILITIES = [
     "поменяться картой хобби с любым игроком", "поменяться картой черта характера с любым игроком"
 ]
 
+# Классификация способностей
+ABILITY_TYPES = {
+    # Класс 1.1: На себя
+    "сменить себе профессию": "self",
+    "сменить себе фобию": "self",
+    "сменить себе хобби": "self",
+    "сменить себе здоровье": "self",
+    "сменить себе багаж": "self",
+    
+    # Класс 1.2: На бункер
+    "рядом есть ещё один бункер, в котором есть 2 плодовитых мужчин": "bunker",
+    "рядом есть ещё один бункер, в котором есть 2 плодовитых женщины": "bunker",
+    "бункер находится около пресного озера": "bunker",
+    "бункер находится в лесу": "bunker",
+    "у бункера есть гараж и машина": "bunker",
+    "в бункере оказывается инопланетянин": "bunker",
+    "рядом с вашим бункером находиться враждебный бункер, в который вы попадаете и будете мстить": "bunker",
+    "украсть все запасы еды и воды из бункера(никто не сможет помешать этому)": "bunker",
+    "украсть все предметы(кроме еды и воды) из бункера(никто не сможет помешать этому)": "bunker",
+    "уменьшить бункер на 1": "bunker",
+    "увеличить бункер на 1": "bunker",
+    
+    # Класс 1.3: На всех
+    "сменить проффесии всех игроков": "all_players",
+    "в следующем ходу все игроки раскрывают выбранную вами характеристику": "all_players",
+    
+    # Класс 2: На другого игрока
+    "изменить профессию любого игрока": "target_player",
+    "изменить фобию любого игрока": "target_player",
+    "изменить хобби любого игрока": "target_player",
+    "изменить здоровье любого игрока": "target_player",
+    "изменить багаж любого игрока": "target_player",
+    "воскресить любого игрока": "target_player",
+    "вылечить бесплодие любого игрока": "target_player",
+    "омолодить любого игрока на 15 лет если он старше 30": "target_player",
+    "защита на 1 ход любого игрока от голосования (его нельзя выгнать в этом коне)": "target_player",
+    
+    # Класс 3: Обмен
+    "поменяться картой \"состояние здоровья\" с любым игроком": "swap",
+    "поменяться картой \"проффесия\" с любым игроком": "swap",
+    "поменяться картой \"биологические данные\" с любым игроком": "swap",
+    "поменяться картой \"фобия\" с любым игроком": "swap",
+    "поменяться картой \"багаж\" с любым игроком": "swap",
+    "поменяться картой \"хобби\" с любым игроком": "swap",
+    "поменяться картой \"черта характера\" с любым игроком": "swap",
+    # Старые варианты написания (из ALL_ABILITIES)
+    "поменяться картой проффесия с любым игроком": "swap",
+    "поменяться картой фобия с любым игроком": "swap",
+    "поменяться картой состояние здоровья с любым игроком": "swap",
+    "поменяться картой багаж с любым игроком": "swap",
+    "поменяться картой хобби с любым игроком": "swap",
+    "поменяться картой черта характера с любым игроком": "swap",
+    
+    # Класс 4: Раскрытие (офлайн)
+    "раскрыть любую характеристику любого игрока (твой выбор)": "reveal",
+    "раскрыть случайную характеристику любого игрока (его выбор)": "reveal",
+    
+    # Класс 5: Позиционные
+    "карта врага (если человек слева от тебя попадает в бункер - ты нет)": "positional",
+    "карта врага (если человек справа от тебя попадает в бункер - ты нет)": "positional",
+    "карта врага (если человек напротив тебя попадает в бункер - ты нет)": "positional",
+    "Карта друга (если человек напротив тебя не попадает в бункер - ты тоже)": "positional",
+    "Карта друга (если человек слева от тебя не попадает в бункер - ты тоже)": "positional",
+    "Карта друга (если человек после тебя не попадает в бункер - ты тоже)": "positional",
+}
+
 def get_current_user_id(x_user_id: str = Header(..., alias="X-User-Id")):
     if not x_user_id:
         raise HTTPException(status_code=401, detail="Не указан заголовок X-User-Id")
@@ -163,10 +229,30 @@ def require_host(room: Room, user_id: str):
     if room.host_id != user_id:
         raise HTTPException(status_code=403, detail="Только создатель комнаты может выполнять это действие")
 
-def update_json(current_dict: dict, key: str, value: any) -> dict:
-    d = current_dict or {}
-    d[key] = value
-    return d
+def update_character_field(character_card: list, field_key: str, new_value: str) -> list:
+    """Обновляет значение поля в character_card (формат list)"""
+    if not isinstance(character_card, list):
+        character_card = []
+    
+    for item in character_card:
+        if isinstance(item, dict) and item.get("key") == field_key:
+            item["value"] = new_value
+            return character_card
+    
+    # Если поле не найдено, добавляем его
+    character_card.append({"key": field_key, "value": new_value})
+    return character_card
+
+def get_character_field(character_card: list, field_key: str, default=None):
+    """Получает значение поля из character_card (формат list)"""
+    if not isinstance(character_card, list):
+        return default
+    
+    for item in character_card:
+        if isinstance(item, dict) and item.get("key") == field_key:
+            return item.get("value", default)
+    
+    return default
 
 class RoomActionRequest(BaseModel):
     user_name: str
@@ -269,7 +355,14 @@ async def get_game_state(room_id: str, user_id: str = Depends(get_current_user_i
         "bunker_card": room.bunker_card,
         "disaster_card": room.disaster_card,
         "my_character": player.character_card,
-        "my_abilities": [{"text": ab, "used": ab in (player.used_abilities or [])} for ab in (player.abilities or [])],
+        "my_abilities": [
+            {
+                "text": ab, 
+                "used": ab in (player.used_abilities or []),
+                "type": ABILITY_TYPES.get(ab, "unknown")
+            } 
+            for ab in (player.abilities or [])
+        ],
         "players": [{"id": p.user_id, "name": p.name, "is_alive": p.is_alive, "is_host": (p.user_id == room.host_id)} for p in all_players]
     }
 
@@ -287,66 +380,81 @@ async def use_ability(room_id: str, request: UseAbilityRequest, user_id: str = D
     if "сменить себе" in ability:
         if "профессию" in ability:
             new_prof = Generator_prof.generate_card()
-            player.character_card = update_json(player.character_card, "Профессия:\nРабота", new_prof["Профессия"])
-            player.character_card = update_json(player.character_card, "Стаж", new_prof["Стаж"])
+            player.character_card = update_character_field(player.character_card, "Работа", new_prof.get("Работа", new_prof.get("Профессия", "")))
+            player.character_card = update_character_field(player.character_card, "Стаж", new_prof.get("Стаж", ""))
         elif "фобию" in ability:
             new_phobia = Generator_phobia.generate_card()
-            player.character_card = update_json(player.character_card, "\nФобия", new_phobia["Фобия"])
+            player.character_card = update_character_field(player.character_card, "Фобия", new_phobia.get("Фобия", ""))
         elif "хобби" in ability:
             new_hob = Generator_hob.generate_card()
-            player.character_card = update_json(player.character_card, "Хобби", new_hob["Хобби"])
+            player.character_card = update_character_field(player.character_card, "Хобби", new_hob.get("Хобби", ""))
         elif "здоровье" in ability:
             new_health = Generator_health.generate_card()
-            player.character_card = update_json(player.character_card, "\nСостояние здоровья:\nДиагноз", new_health["Диагноз"])
-            player.character_card = update_json(player.character_card, "Прогресс", new_health["Прогресс"])
+            player.character_card = update_character_field(player.character_card, "Диагноз", new_health.get("Диагноз", ""))
+            player.character_card = update_character_field(player.character_card, "Прогресс", new_health.get("Прогресс", ""))
         elif "багаж" in ability:
             new_char = Generator_player.generate_card()
-            player.character_card = update_json(player.character_card, "Багаж", new_char["Багаж"])
+            player.character_card = update_character_field(player.character_card, "Багаж", get_character_field(new_char, "Багаж", ""))
             
     elif "любого игрока" in ability and request.target_player_id:
         target = db.query(RoomPlayer).filter(RoomPlayer.room_id == room_id, RoomPlayer.user_id == request.target_player_id).first()
         if target:
             if "профессию" in ability:
                 new_prof = Generator_prof.generate_card()
-                target.character_card = update_json(target.character_card, "Профессия:\nРабота", new_prof["Профессия"])
-                target.character_card = update_json(target.character_card, "Стаж", new_prof["Стаж"])
+                target.character_card = update_character_field(target.character_card, "Работа", new_prof.get("Работа", new_prof.get("Профессия", "")))
+                target.character_card = update_character_field(target.character_card, "Стаж", new_prof.get("Стаж", ""))
             elif "фобию" in ability:
                 new_phobia = Generator_phobia.generate_card()
-                target.character_card = update_json(target.character_card, "\nФобия", new_phobia["Фобия"])
+                target.character_card = update_character_field(target.character_card, "Фобия", new_phobia.get("Фобия", ""))
             elif "хобби" in ability:
                 new_hob = Generator_hob.generate_card()
-                target.character_card = update_json(target.character_card, "Хобби", new_hob["Хобби"])
+                target.character_card = update_character_field(target.character_card, "Хобби", new_hob.get("Хобби", ""))
             elif "здоровье" in ability:
                 new_health = Generator_health.generate_card()
-                target.character_card = update_json(target.character_card, "\nСостояние здоровья:\nДиагноз", new_health["Диагноз"])
-                target.character_card = update_json(target.character_card, "Прогресс", new_health["Прогресс"])
+                target.character_card = update_character_field(target.character_card, "Диагноз", new_health.get("Диагноз", ""))
+                target.character_card = update_character_field(target.character_card, "Прогресс", new_health.get("Прогресс", ""))
             elif "багаж" in ability:
                 new_char = Generator_player.generate_card()
-                target.character_card = update_json(target.character_card, "Багаж", new_char["Багаж"])
+                target.character_card = update_character_field(target.character_card, "Багаж", get_character_field(new_char, "Багаж", ""))
             elif "воскресить" in ability:
                 target.is_alive = True
 
     elif "поменяться" in ability and request.target_player_id:
         target = db.query(RoomPlayer).filter(RoomPlayer.room_id == room_id, RoomPlayer.user_id == request.target_player_id).first()
         if target:
-            p_card = player.character_card or {}
-            t_card = target.character_card or {}
-            
             if "професия" in ability or "проффесия" in ability:
-                p_card["Профессия:\nРабота"], t_card["Профессия:\nРабота"] = t_card.get("Профессия:\nРабота"), p_card.get("Профессия:\nРабота")
-                p_card["Стаж"], t_card["Стаж"] = t_card.get("Стаж"), p_card.get("Стаж")
+                p_prof = get_character_field(player.character_card, "Работа")
+                p_stazh = get_character_field(player.character_card, "Стаж")
+                t_prof = get_character_field(target.character_card, "Работа")
+                t_stazh = get_character_field(target.character_card, "Стаж")
+                player.character_card = update_character_field(player.character_card, "Работа", t_prof)
+                player.character_card = update_character_field(player.character_card, "Стаж", t_stazh)
+                target.character_card = update_character_field(target.character_card, "Работа", p_prof)
+                target.character_card = update_character_field(target.character_card, "Стаж", p_stazh)
             elif "фобия" in ability:
-                p_card["\nФобия"], t_card["\nФобия"] = t_card.get("\nФобия"), p_card.get("\nФобия")
+                p_phobia = get_character_field(player.character_card, "Фобия")
+                t_phobia = get_character_field(target.character_card, "Фобия")
+                player.character_card = update_character_field(player.character_card, "Фобия", t_phobia)
+                target.character_card = update_character_field(target.character_card, "Фобия", p_phobia)
             elif "хобби" in ability:
-                p_card["Хобби"], t_card["Хобби"] = t_card.get("Хобби"), p_card.get("Хобби")
+                p_hobbie = get_character_field(player.character_card, "Хобби")
+                t_hobbie = get_character_field(target.character_card, "Хобби")
+                player.character_card = update_character_field(player.character_card, "Хобби", t_hobbie)
+                target.character_card = update_character_field(target.character_card, "Хобби", p_hobbie)
             elif "здоровье" in ability or "состояние здоровья" in ability:
-                p_card["\nСостояние здоровья:\nДиагноз"], t_card["\nСостояние здоровья:\nДиагноз"] = t_card.get("\nСостояние здоровья:\nДиагноз"), p_card.get("\nСостояние здоровья:\nДиагноз")
-                p_card["Прогресс"], t_card["Прогресс"] = t_card.get("Прогресс"), p_card.get("Прогресс")
+                p_diagnoz = get_character_field(player.character_card, "Диагноз")
+                p_progress = get_character_field(player.character_card, "Прогресс")
+                t_diagnoz = get_character_field(target.character_card, "Диагноз")
+                t_progress = get_character_field(target.character_card, "Прогресс")
+                player.character_card = update_character_field(player.character_card, "Диагноз", t_diagnoz)
+                player.character_card = update_character_field(player.character_card, "Прогресс", t_progress)
+                target.character_card = update_character_field(target.character_card, "Диагноз", p_diagnoz)
+                target.character_card = update_character_field(target.character_card, "Прогресс", p_progress)
             elif "багаж" in ability:
-                p_card["Багаж"], t_card["Багаж"] = t_card.get("Багаж"), p_card.get("Багаж")
-                
-            player.character_card = p_card
-            target.character_card = t_card
+                p_bag = get_character_field(player.character_card, "Багаж")
+                t_bag = get_character_field(target.character_card, "Багаж")
+                player.character_card = update_character_field(player.character_card, "Багаж", t_bag)
+                target.character_card = update_character_field(target.character_card, "Багаж", p_bag)
                 
     elif "бункер" in ability or "всех" in ability:
         b_card = room.bunker_card or {}
@@ -366,8 +474,8 @@ async def use_ability(room_id: str, request: UseAbilityRequest, user_id: str = D
             all_players = db.query(RoomPlayer).filter(RoomPlayer.room_id == room_id).all()
             for p in all_players:
                 new_prof = Generator_prof.generate_card()
-                p.character_card = update_json(p.character_card, "Профессия:\nРабота", new_prof["Профессия"])
-                p.character_card = update_json(p.character_card, "Стаж", new_prof["Стаж"])
+                p.character_card = update_character_field(p.character_card, "Работа", new_prof.get("Работа", new_prof.get("Профессия", "")))
+                p.character_card = update_character_field(p.character_card, "Стаж", new_prof.get("Стаж", ""))
         room.bunker_card = b_card
     
     used = player.used_abilities or []

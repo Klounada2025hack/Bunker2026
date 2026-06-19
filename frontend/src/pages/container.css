@@ -3,15 +3,16 @@
 html, body, #root {
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
+    min-width: 100%;
+    min-height: 100vh;  /* ← заменяем height: 100% на min-height: 100vh */
+    overflow-x: hidden; /* на всякий случай убираем горизонтальный скролл */
 }
 
 .Container {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    align-items: center; /* ЦЕНТРИРОВАНИЕ ВСЕХ ЭЛЕМЕНТОВ */
+    align-items: center; 
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
@@ -57,7 +58,7 @@ html, body, #root {
     width: 100%;
 }
 
-/* КНОПКИ В ЛОББИ */
+
 .lobby-buttons {
     display: flex;
     flex-direction: column;
@@ -89,7 +90,7 @@ html, body, #root {
     box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
 }
 
-/* БЛОК ПРИСОЕДИНЕНИЯ */
+
 .lobby-join {
     display: flex;
     flex-direction: column;
@@ -242,12 +243,6 @@ html, body, #root {
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
 }
-
-.bottom-row > *:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-}
-
 .bottom-row > *.used {
     opacity: 0.4;
     cursor: not-allowed;
@@ -323,4 +318,15 @@ html, body, #root {
     padding: 8px 20px;
     border-radius: 6px;
     cursor: pointer;
+}
+.layoutAuth .Container > * {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+.layoutAuth .Container > .logo-wrapper,
+.layoutAuth .Container > svg,
+.layoutAuth .Container > img,
+.layoutAuth .Container > :first-child {
+    margin-bottom: 30px;    /* подстрой под вкус: 10 / 20 / 30 / 40px */
 }

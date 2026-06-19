@@ -1,7 +1,7 @@
 .box{
     background-color: #28332F;
-    border-top-left-radius: 28px;
-    border-top-right-radius: 28px;
+    border-radius: 16px;           
+    font-family: 'Montserrat', sans-serif;
     height: 650px;
     width: 1000px;
     padding: 30px;

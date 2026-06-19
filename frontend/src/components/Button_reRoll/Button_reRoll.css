@@ -23,13 +23,15 @@
 
 .inputPlayers {
     font-size: 20px;
-    padding: 8px 12px;
+    padding: 14px 16px;
     border-radius: 8px;
     outline: none;
-    width: 400px;
+    width: 100%;               /* было 400px */
+    max-width: 100%;
+    box-sizing: border-box;
     transition: 0.2s;
     margin: 0 auto;
-    
+    margin-top: 30px;
 }
 
 .inputPlayers:focus {

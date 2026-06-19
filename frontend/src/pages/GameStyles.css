@@ -14,350 +14,837 @@
   --border: rgba(255, 255, 255, 0.15);
   --radius: 12px;
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  
+  --ability-1: #F1C40F;
+  --ability-2: #E74C3C;
+  --ability-3: #3498DB;
+  --ability-4: #9B59B6;
+  --ability-5: #2ECC71;
 }
 
-/* ЛОББИ (Ожидание игры) */
+/* ================= ЛОББИ (Ожидание игры) ================= */
 .lobby-wrapper {
-  min-height: 100vh;
-  background: transparent; /* УБРАЛИ ЗЕЛЕНЫЙ ФОН - теперь видна картинка */
-  color: var(--text-main);
-  font-family: 'Montserrat', sans-serif;
-  padding: 20px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url("/image 4.png") center/cover no-repeat;
+    color: var(--text-main);
+    font-family: 'Montserrat', sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
 }
 
 .lobby-card {
-  text-align: center;
-  background: var(--bg-card);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 40px 30px;
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+    text-align: center;
+    background: #33413C;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 50px 35px;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    min-height: 520px;
+    justify-content: center;
+    color: #FFFFFF;
 }
 
-.lobby-title { font-size: 1.75rem; font-weight: 700; margin: 0; }
-.lobby-subtitle { font-size: 1rem; font-weight: 500; color: var(--text-muted); margin: 0; }
+.lobby-card-compact {
+    text-align: center;
+    background: #33413C;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 35px 30px;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    color: #FFFFFF;
+}
+
+.lobby-title { 
+    font-size: 1.75rem; 
+    font-weight: 700; 
+    margin: 0; 
+    color: #FFFFFF;
+}
+
+.lobby-card-compact .lobby-title {
+    font-size: 1.4rem;
+}
+
+.lobby-subtitle { 
+    font-size: 1rem; 
+    font-weight: 500; 
+    color: #CBD5E0; 
+    margin: 0; 
+}
 
 .players-list { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 10px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
 }
 
 .player-card {
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center;
-  padding: 12px 16px; 
-  background: rgba(255,255,255,0.05); 
-  border-radius: 8px;
-  font-weight: 500;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 12px 16px; 
+    background: rgba(255, 255, 255, 0.08); 
+    border-radius: 8px;
+    font-weight: 500;
+    color: #FFFFFF;
 }
 
 .badge-host {
-  background: var(--accent); 
-  color: #1A202C; 
-  font-size: 0.7rem; 
-  font-weight: 700;
-  padding: 4px 8px; 
-  border-radius: 4px; 
-  text-transform: uppercase; 
-  letter-spacing: 0.5px;
+    background: var(--accent); 
+    color: #1A202C; 
+    font-size: 0.7rem; 
+    font-weight: 700;
+    padding: 4px 8px; 
+    border-radius: 4px; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px;
 }
 
 .waiting-msg { 
-  color: var(--accent); 
-  font-weight: 600; 
-  margin: 0; 
+    color: var(--accent); 
+    font-weight: 600; 
+    margin: 0; 
 }
 
 .btn-start-game {
-  width: 100%;
-  padding: 18px 24px;
-  font-size: 1.15rem;
-  font-weight: 700;
-  font-family: 'Montserrat', sans-serif;
-  border-radius: var(--radius);
-  background-color: var(--accent);
-  color: #1A202C;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+    width: 100%;
+    padding: 18px 24px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    border-radius: var(--radius);
+    background-color: var(--accent);
+    color: #1A202C;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .btn-start-game:hover {
-  background-color: var(--accent-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
+    background-color: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
 }
 
 .btn-leave {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  padding: 14px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-weight: 600;
-  font-family: inherit;
-  font-size: 0.95rem;
-  width: 100%;
-  transition: all 0.2s;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #FFFFFF;
+    padding: 14px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 600;
+    font-family: inherit;
+    font-size: 0.95rem;
+    width: 100%;
+    transition: all 0.2s;
 }
 
 .btn-leave:hover {
-  background: rgba(229, 62, 62, 0.15);
-  border-color: var(--danger);
-  color: var(--danger);
+    background: rgba(229, 62, 62, 0.15);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.lobby-card-compact .inputPlayers {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.lobby-card-compact .lobby-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.lobby-card-compact .lobby-actions button {
+    flex: 1;
 }
 
 /* ================= ИГРОВОЙ ЭКРАН ================= */
 .game-layout {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  height: 100vh;
-  overflow: hidden;
-  background-color: var(--bg-main);
-  padding: 20px;
-  box-sizing: border-box;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--bg-main);
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .sidebar {
-  width: 280px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 40px);
+    width: 280px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 40px);
 }
 
 .sidebar-title {
-  margin: 0 0 15px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--accent);
+    margin: 0 0 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent);
 }
 
 .sidebar-list {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 15px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
 .player-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  background: rgba(255,255,255,0.04);
-  border-radius: 8px;
-  font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+    font-size: 0.95rem;
 }
 
 .player-row.kicked {
-  opacity: 0.4;
-  text-decoration: line-through;
+    opacity: 0.4;
+    text-decoration: line-through;
 }
 
 .btn-kick {
-  background: var(--danger);
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.75rem;
-  transition: background 0.2s;
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.75rem;
+    transition: background 0.2s;
 }
 
 .btn-kick:hover {
-  background: var(--danger-hover);
+    background: var(--danger-hover);
 }
 
+/* ================= ГЛАВНАЯ ДОСКА ================= */
 .main-board {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  height: calc(100vh - 40px);
-  overflow-y: auto;
-  padding-right: 5px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    height: calc(100vh - 40px);
+    overflow-y: auto;
+    padding: 30px 50px 50px 50px;
+    font-family: 'Montserrat', sans-serif;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .board-row {
-  display: flex;
-  gap: 15px;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
 }
 
-.top-row, .mid-row {
-  flex: 0 0 auto;
+/* Верхний ряд: Бункер и Катастрофа */
+.top-row {
+    flex: 0 0 auto;
+    gap: 40px;
+    align-items: stretch !important;
 }
 
+.top-row .game-box {
+    flex: 1 1 380px !important;
+    min-height: 280px !important;
+    max-height: 420px !important;
+    height: auto !important;
+    cursor: default !important;
+    transition: none !important;
+}
+
+.top-row .box {
+    flex: 1 1 380px !important;
+    min-height: 280px !important;
+    max-height: 420px !important;
+    height: auto !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.top-row .box-item {
+    padding: 8px 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.top-row .box-item strong {
+    display: inline;
+    color: var(--text-main);
+    margin-right: 6px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.top-row .box-item span {
+    display: inline;
+    color: var(--text-main);
+    word-wrap: break-word;
+}
+
+.top-row .game-box:hover,
+.top-row .box:hover {
+    transform: none !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+    background: var(--bg-card) !important;
+    border-color: var(--border) !important;
+}
+
+/* Нижний ряд: персонаж + способности */
 .bottom-row {
-  flex: 1;
-  flex-wrap: wrap;
-  align-items: flex-start;
+    flex: 0 0 auto;
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    max-width: 1100px;
 }
 
-.game-box {
-  flex: 1;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  min-width: 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* ================= КАРТОЧКА ПЕРСОНАЖА - КОМПАКТНАЯ ================= */
+.character-box {
+    flex: 0 0 280px !important;
+    width: 280px !important;
+    max-width: 280px !important;
 }
 
-.game-box h3, .game-box strong {
-  color: var(--accent);
-  margin-bottom: 4px;
-  margin-top: 0;
-}
-
-.box-item {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 6px;
+.character-box .box {
+    flex: 0 0 280px !important;
+    width: 280px !important;
+    max-width: 280px !important;
+    min-height: 280px !important;
+    max-height: 350px !important;
+    height: auto !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 10px !important;
+    gap: 2px !important;
 }
 
 .char-item {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 10px;
-  margin-bottom: 6px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    line-height: 1.2;
+}
+
+.char-item:last-child {
+    border-bottom: none;
+}
+
+.char-item strong {
+    display: inline;
+    color: var(--text-main);
+    margin-right: 3px;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
 }
 
 .char-value {
-  font-size: 1.1em;
-  color: var(--accent);
-  display: block;
-  margin-top: 4px;
+    display: inline;
+    color: var(--text-main);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    word-wrap: break-word;
 }
 
-.ability-box {
-  cursor: pointer;
-  transition: all 0.2s ease;
+.char-section-header {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.7rem;
+    margin-top: 8px;
+    margin-bottom: 3px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.ability-box:hover {
-  background: var(--bg-card-hover);
-  transform: translateY(-2px);
+.char-section-header:first-child {
+    margin-top: 0;
 }
 
-.ability-box.used {
-  opacity: 0.4;
-  cursor: not-allowed;
-  pointer-events: none;
-  background: rgba(0,0,0,0.2);
+/* ================= КОЛОНКА СПОСОБНОСТЕЙ ================= */
+.abilities-column {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: flex-start;
+    padding: 10px 0;
+    max-width: 600px;
 }
 
-.ability-text {
-  line-height: 1.4;
-  font-size: 0.95rem;
-  margin: 0;
+.bottom-row > .abilities-column,
+.bottom-row > .abilities-column:hover {
+    cursor: default !important;
+    transition: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
 }
 
-.ability-used {
-  color: var(--danger);
-  font-weight: 700;
-  margin-top: 8px;
-  font-size: 0.85rem;
+.abilities-column .ability-box {
+    position: relative;
+    flex: 0 0 auto;
+    width: 180px;
+    height: 240px;
+    background: #33413C;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
 }
 
+.abilities-column .ability-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--current-accent), transparent);
+    border-radius: 16px 16px 0 0;
+}
+
+.abilities-column .ability-box:nth-child(1) { --current-accent: var(--ability-1); }
+.abilities-column .ability-box:nth-child(2) { --current-accent: var(--ability-2); }
+.abilities-column .ability-box:nth-child(3) { --current-accent: var(--ability-3); }
+.abilities-column .ability-box:nth-child(4) { --current-accent: var(--ability-4); }
+.abilities-column .ability-box:nth-child(5) { --current-accent: var(--ability-5); }
+
+.abilities-column .ability-box::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    background: var(--current-accent);
+    opacity: 0.15;
+    border-radius: 50%;
+    filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.abilities-column .ability-box h3 {
+    font-size: 0.85rem;
+    margin: 8px 0 12px;
+    text-align: center;
+    color: var(--current-accent);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.abilities-column .ability-box h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: var(--current-accent);
+    border-radius: 2px;
+    opacity: 0.7;
+}
+
+.abilities-column .ability-text {
+    font-size: 0.8rem;
+    line-height: 1.3;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 0;
+    color: var(--text-main);
+    position: relative;
+    z-index: 1;
+}
+
+.abilities-column .ability-used {
+    font-size: 0.7rem;
+    margin-top: 6px;
+    text-align: center;
+    color: var(--danger);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 8px;
+    background: rgba(229, 62, 62, 0.15);
+    border-radius: 4px;
+}
+
+.abilities-column .ability-box:hover {
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 6px 16px rgba(0, 0, 0, 0.4),
+        0 0 0 1px var(--current-accent),
+        0 0 20px rgba(241, 196, 15, 0.3);
+    border-color: var(--current-accent);
+}
+
+.abilities-column .ability-box:hover::after {
+    opacity: 0.4;
+    width: 40px;
+    height: 40px;
+    filter: blur(12px);
+}
+
+.abilities-column .ability-box:hover h3 {
+    text-shadow: 0 0 10px rgba(241, 196, 15, 0.6);
+}
+
+.abilities-column .ability-box.used {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+    background: rgba(0,0,0,0.2);
+    filter: grayscale(80%);
+}
+
+.abilities-column .ability-box.used::before {
+    background: #666;
+}
+
+.abilities-column .ability-box.used h3 {
+    color: #888;
+}
+
+.abilities-column .ability-box.used::after {
+    display: none;
+}
+
+.abilities-column .ability-box.used:hover {
+    transform: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ================= ПОЗИЦИОННЫЕ КАРТЫ (КЛАСС 5) ================= */
+.abilities-column .ability-box.positional {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.3);
+    filter: grayscale(100%);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.abilities-column .ability-box.positional::before {
+    background: #666;
+}
+
+.abilities-column .ability-box.positional::after {
+    display: none;
+}
+
+.abilities-column .ability-box.positional h3 {
+    color: #888;
+}
+
+.abilities-column .ability-box.positional:hover {
+    transform: none !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.ability-positional {
+    font-size: 0.7rem;
+    margin-top: 6px;
+    text-align: center;
+    color: #888;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 8px;
+    background: rgba(136, 136, 136, 0.15);
+    border-radius: 4px;
+}
+
+/* ================= КАРТОЧКИ ================= */
+.game-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: 'Montserrat', sans-serif;
+    box-sizing: border-box;
+}
+
+.game-box h3 {
+    color: var(--accent);
+    margin-bottom: 4px;
+    margin-top: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.game-box strong {
+    color: var(--accent);
+    margin-bottom: 4px;
+    margin-top: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.box-item {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 5px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+}
+
+/* ================= МОДАЛЬНЫЕ ОКНА ================= */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
 }
 
 .modal-content {
-  background: #3A4A44;
-  padding: 25px;
-  border-radius: var(--radius);
-  width: 90%;
-  max-width: 380px;
-  text-align: center;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
+    background: #3A4A44;
+    padding: 25px;
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.modal-content h3 {
+    color: var(--accent);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.modal-ability-text {
+    color: var(--text-main);
+    font-style: italic;
+    margin: 15px 0;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-align: left;
 }
 
 .target-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 .target-btn {
-  background: var(--bg-card);
-  color: var(--text-main);
-  border: 1px solid var(--border);
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  font-family: inherit;
-  font-size: 1rem;
-  transition: all 0.2s;
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.2s;
 }
 
 .target-btn:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--accent);
+    background: var(--bg-card-hover);
+    border-color: var(--accent);
+    transform: translateY(-1px);
 }
 
+/* Кнопки действий в модалке */
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-confirm {
+    flex: 1;
+    padding: 12px;
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-confirm:hover {
+    background: #38a169;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+}
+
+/* ================= УВЕДОМЛЕНИЯ (TOAST) ================= */
 .toast {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--success);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  box-shadow: var(--shadow);
-  z-index: 1100;
-  animation: slideDown 0.3s ease-out;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--success);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    z-index: 1100;
+    animation: slideDown 0.3s ease-out;
+    max-width: 500px;
+}
+
+.toast-ability {
+    background: #2D3E35;
+    border: 1px solid var(--accent);
+    padding: 16px 24px;
+    text-align: center;
+}
+
+.toast-title {
+    color: var(--accent);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.toast-text {
+    color: var(--text-main);
+    font-size: 0.9rem;
+    font-style: italic;
+    line-height: 1.4;
+    font-weight: 500;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent);
 }
 
 @keyframes slideDown {
-  from { transform: translate(-50%, -20px); opacity: 0; }
-  to { transform: translate(-50%, 0); opacity: 1; }
+    from { transform: translate(-50%, -20px); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
 }
 
+/* ================= ПОЛНОЕ ОТКЛЮЧЕНИЕ HOVER ДЛЯ БУНКЕРА И КАТАСТРОФЫ ================= */
+.top-row .game-box,
+.top-row .box,
+.top-row > * {
+    pointer-events: none !important;
+    cursor: default !important;
+    transition: none !important;
+}
+
+/* ================= АДАПТИВ ================= */
 @media (max-width: 900px) {
-  .game-layout { flex-direction: column; height: auto; overflow: visible; }
-  .sidebar { width: 100%; height: auto; max-height: 250px; }
-  .main-board { height: auto; overflow: visible; }
-  .top-row, .mid-row, .bottom-row { flex-direction: column; }
-  .game-box { min-width: 100%; }
+    .game-layout { flex-direction: column; height: auto; overflow: visible; }
+    .sidebar { width: 100%; height: auto; max-height: 250px; }
+    .main-board { height: auto; overflow: visible; padding: 20px; }
+    .top-row, .bottom-row { flex-direction: column; }
+    .top-row .game-box,
+    .top-row .box {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 auto !important;
+    }
+    .abilities-column { 
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .abilities-column .ability-box {
+        width: 160px;
+        height: 220px;
+    }
+    .game-box { max-width: 100%; width: 100%; }
+    .top-row .game-box, .character-box { width: 100%; max-width: 100%; }
+    
+    .bottom-row > .abilities-column,
+    .bottom-row > .abilities-column:hover {
+        transform: none !important;
+        box-shadow: none !important;
+    }
 }
